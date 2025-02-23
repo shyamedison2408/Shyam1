@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Library Portal - Add New Book</title>
+  <style>
+    /* Basic CSS for styling */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #f4f4f4;
+    }
+    .form-container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="email"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .error {
+      border-color: red;
+    }
+    .error-message {
+      color: red;
+      font-size: 12px;
+      margin-top: -8px;
+      margin-bottom: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+    .details {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #f9f9f9;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2>Add New Book</h2>
+    <form id="bookForm">
+      <!-- Category Dropdown -->
+      <div>
+        <label for="category">Category:</label>
+        <select id="category" name="category">
+          <option value="IT">IT</option>
+          <option value="Science">Science</option>
+          <option value="Literature">Literature</option>
+          <option value="History">History</option>
+        </select>
+      </div>
+
+      <!-- Book Name -->
+      <div>
+        <label for="bookName">Book Name:</label>
+        <input type="text" id="bookName" name="bookName" placeholder="Enter book name">
+        <div class="error-message" id="bookNameError"></div>
+      </div>
+
+      <!-- Author Name -->
+      <div>
+        <label for="authorName">Author Name:</label>
+        <input type="text" id="authorName" name="authorName" placeholder="Enter author name">
+        <div class="error-message" id="authorNameError"></div>
+      </div>
+
+      <!-- Author Email -->
+      <div>
+        <label for="authorEmail">Author Email:</label>
+        <input type="email" id="authorEmail" name="authorEmail" placeholder="Enter author email">
+        <div class="error-message" id="authorEmailError"></div>
+      </div>
+
+      <!-- Publish Year -->
+      <div>
+        <label for="publishYear">Publish Year:</label>
+        <input type="number" id="publishYear" name="publishYear" placeholder="Enter publish year">
+        <div class="error-message" id="publishYearError"></div>
+      </div>
+
+      <!-- Price -->
+      <div>
+        <label for="price">Price:</label>
+        <input type="number" id="price" name="price" placeholder="Enter price">
+        <div class="error-message" id="priceError"></div>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="button" onclick="validateForm()">Save</button>
+    </form>
+
+    <!-- Display Book Details -->
+    <div id="bookDetails" class="details"></div>
+  </div>
+
+  <script>
+    // Function to validate the form
+    function validateForm() {
+      // Clear previous error messages and styles
+      document.querySelectorAll(".error-message").forEach(el => el.textContent = "");
+      document.querySelectorAll("input, select").forEach(el => el.classList.remove("error"));
+
+      let isValid = true;
+
+      // Validate Category
+      const category = document.getElementById("category").value;
+      if (!category) {
+        document.getElementById("category").classList.add("error");
+        document.getElementById("category").nextElementSibling.textContent = "Please select a category.";
+        isValid = false;
+      }
+
+      // Validate Book Name
+      const bookName = document.getElementById("bookName").value;
+      if (!bookName) {
+        document.getElementById("bookNameError").textContent = "Please enter the Book Name.";
+        document.getElementById("bookName").classList.add("error");
+        isValid = false;
+      } else if (/\d/.test(bookName)) {
+        document.getElementById("bookNameError").textContent = "Numeric values not allowed.";
+        document.getElementById("bookName").classList.add("error");
+        isValid = false;
+      } else if (bookName.length > 50) {
+        document.getElementById("bookNameError").textContent = "Book name length should not exceed 50.";
+        document.getElementById("bookName").classList.add("error");
+        isValid = false;
+      }
+
+      // Validate Author Name
+      const authorName = document.getElementById("authorName").value;
+      if (!authorName) {
+        document.getElementById("authorNameError").textContent = "Please enter the Author Name.";
+        document.getElementById("authorName").classList.add("error");
+        isValid = false;
+      } else if (/\d/.test(authorName)) {
+        document.getElementById("authorNameError").textContent = "Numeric values not allowed.";
+        document.getElementById("authorName").classList.add("error");
+        isValid = false;
+      } else if (/[^a-zA-Z\s]/.test(authorName)) {
+        document.getElementById("authorNameError").textContent = "Special characters not allowed.";
+        document.getElementById("authorName").classList.add("error");
+        isValid = false;
+      } else if (authorName.length > 50) {
+        document.getElementById("authorNameError").textContent = "Author name length should not exceed 50.";
+        document.getElementById("authorName").classList.add("error");
+        isValid = false;
+      }
+
+      // Validate Author Email
+      const authorEmail = document.getElementById("authorEmail").value;
+      if (!authorEmail) {
+        document.getElementById("authorEmailError").textContent = "Please enter the Author Email.";
+        document.getElementById("authorEmail").classList.add("error");
+        isValid = false;
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(authorEmail)) {
+        document.getElementById("authorEmailError").textContent = "Please enter a valid Email Address.";
+        document.getElementById("authorEmail").classList.add("error");
+        isValid = false;
+      }
+
+      // Validate Publish Year
+      const publishYear = document.getElementById("publishYear").value;
+      const currentYear = new Date().getFullYear();
+      if (!publishYear) {
+        document.getElementById("publishYearError").textContent = "Please enter the Publish Year.";
+        document.getElementById("publishYear").classList.add("error");
+        isValid = false;
+      } else if (publishYear > currentYear) {
+        document.getElementById("publishYearError").textContent = "Please enter a valid Published year.";
+        document.getElementById("publishYear").classList.add("error");
+        isValid = false;
+      }
+
+      // Validate Price
+      const price = document.getElementById("price").value;
+      if (!price) {
+        document.getElementById("priceError").textContent = "Please enter the Price.";
+        document.getElementById("price").classList.add("error");
+        isValid = false;
+      } else if (isNaN(price)) {
+        document.getElementById("priceError").textContent = "Alphabets values not allowed.";
+        document.getElementById("price").classList.add("error");
+        isValid = false;
+      }
+
+      // If all validations pass, store and display book details
+      if (isValid) {
+        const bookDetails = {
+          category: category,
+          bookName: bookName,
+          authorName: authorName,
+          authorEmail: authorEmail,
+          publishYear: publishYear,
+          price: price
+        };
+
+        // Display book details
+        displayBookDetails(bookDetails);
+      }
+    }
+
+    // Function to display book details
+    function displayBookDetails(details) {
+      const bookDetailsDiv = document.getElementById("bookDetails");
+      bookDetailsDiv.innerHTML = `
+        <h3>Book Details:</h3>
+        <p><strong>Category:</strong> ${details.category}</p>
+        <p><strong>Book Name:</strong> ${details.bookName}</p>
+        <p><strong>Author Name:</strong> ${details.authorName}</p>
+        <p><strong>Author Email:</strong> ${details.authorEmail}</p>
+        <p><strong>Publish Year:</strong> ${details.publishYear}</p>
+        <p><strong>Price:</strong> ${details.price}</p>
+      `;
+    }
+  </script>
+</body>
+</html>
