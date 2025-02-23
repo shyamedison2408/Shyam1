@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Portal - Add New Book</title>
+    <style>
+        /* Basic styling for pages */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .page {
+            max-width: 600px;
+            margin: 20px auto;
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        /* Form styling */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .error {
+            color: red;
+            font-size: 12px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .error-border {
+            border-color: red !important;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Results page styling */
+        #resultContent {
+            line-height: 1.6;
+        }
+
+        .back-button {
+            background-color: #666;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Form Page -->
+    <div id="formPage" class="page">
+        <h2>Add New Book</h2>
+        <form id="bookForm">
+            <!-- Category Dropdown -->
+            <div class="form-group">
+                <label for="category">Category</label>
+                <select id="category">
+                    <option value="IT Dept" selected>IT Dept</option>
+                    <option value="Literature">Literature</option>
+                    <option value="Science">Science</option>
+                </select>
+                <div class="error" id="categoryError"></div>
+            </div>
+
+            <!-- Book Name Input -->
+            <div class="form-group">
+                <label for="bookName">Book Name</label>
+                <input type="text" id="bookName">
+                <div class="error" id="bookNameError"></div>
+            </div>
+
+            <!-- Author Name Input -->
+            <div class="form-group">
+                <label for="authorName">Author Name</label>
+                <input type="text" id="authorName">
+                <div class="error" id="authorNameError"></div>
+            </div>
+
+            <!-- Author Email Input -->
+            <div class="form-group">
+                <label for="authorEmail">Author Email</label>
+                <input type="email" id="authorEmail">
+                <div class="error" id="authorEmailError"></div>
+            </div>
+
+            <!-- Publish Year Input -->
+            <div class="form-group">
+                <label for="publishYear">Published Year</label>
+                <input type="number" id="publishYear">
+                <div class="error" id="publishYearError"></div>
+            </div>
+
+            <!-- Price Input -->
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" id="price">
+                <div class="error" id="priceError"></div>
+            </div>
+
+            <button type="submit">Save</button>
+        </form>
+    </div>
+
+    <!-- Results Page -->
+    <div id="resultPage" class="page hidden">
+        <h2>Book Added Successfully!</h2>
+        <div id="resultContent"></div>
+        <button class="back-button" onclick="showFormPage()">Back to Form</button>
+    </div>
+
+    <script>
+        // Regular expressions for validation
+        const nameRegex = /^[a-zA-Z\s]*$/;
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const specialCharRegex = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/;
+
+        // Get DOM elements
+        const formPage = document.getElementById('formPage');
+        const resultPage = document.getElementById('resultPage');
+        const resultContent = document.getElementById('resultContent');
+
+        // Real-time validation for Book Name
+        document.getElementById('bookName').addEventListener('input', function(e) {
+            validateBookName(e.target.value);
+        });
+
+        // Real-time validation for Author Name
+        document.getElementById('authorName').addEventListener('input', function(e) {
+            validateAuthorName(e.target.value);
+        });
+
+        // Form submission handler
+        document.getElementById('bookForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            if(validateForm()) {
+                const book = getFormData();
+                showResultPage(book);
+            }
+        });
+
+        function showFormPage() {
+            formPage.classList.remove('hidden');
+            resultPage.classList.add('hidden');
+            document.getElementById('bookForm').reset();
+        }
+
+        function showResultPage(book) {
+            // Update result content
+            resultContent.innerHTML = `
+                <p><strong>Category:</strong> ${book.category}</p>
+                <p><strong>Book Name:</strong> ${book.bookName}</p>
+                <p><strong>Author Name:</strong> ${book.authorName}</p>
+                <p><strong>Author Email:</strong> ${book.authorEmail}</p>
+                <p><strong>Published Year:</strong> ${book.publishYear}</p>
+                <p><strong>Price:</strong> $${book.price}</p>
+            `;
+            
+            // Switch pages
+            formPage.classList.add('hidden');
+            resultPage.classList.remove('hidden');
+        }
+
+        function getFormData() {
+            return {
+                category: document.getElementById('category').value,
+                bookName: document.getElementById('bookName').value,
+                authorName: document.getElementById('authorName').value,
+                authorEmail: document.getElementById('authorEmail').value,
+                publishYear: document.getElementById('publishYear').value,
+                price: document.getElementById('price').value
+            };
+        }
+
+        function validateForm() {
+            let isValid = true;
+            
+            // Reset errors
+            document.querySelectorAll('.error').forEach(el => {
+                el.style.display = 'none';
+            });
+            document.querySelectorAll('.error-border').forEach(el => {
+                el.classList.remove('error-border');
+            });
+
+            // Validate each field
+            isValid &= validateField('category', 'Please select a category');
+            isValid &= validateField('bookName', 'Please enter book name');
+            isValid &= validateBookName(document.getElementById('bookName').value);
+            isValid &= validateField('authorName', 'Please enter author name');
+            isValid &= validateAuthorName(document.getElementById('authorName').value);
+            isValid &= validateEmail();
+            isValid &= validateYear();
+            isValid &= validatePrice();
+
+            return isValid;
+        }
+
+        function validateBookName(value) {
+            const field = document.getElementById('bookName');
+            const error = document.getElementById('bookNameError');
+            
+            if(/\d/.test(value)) {
+                showError(field, error, 'Numeric values not allowed');
+                return false;
+            }
+            if(value.length > 50) {
+                showError(field, error, 'Book name length should not exceed 50');
+                return false;
+            }
+            return true;
+        }
+
+        function validateAuthorName(value) {
+            const field = document.getElementById('authorName');
+            const error = document.getElementById('authorNameError');
+            
+            if(/\d/.test(value)) {
+                showError(field, error, 'Numeric values not allowed');
+                return false;
+            }
+            if(specialCharRegex.test(value)) {
+                showError(field, error, 'Special characters not allowed');
+                return false;
+            }
+            if(value.length > 50) {
+                showError(field, error, 'Name length should not exceed 50');
+                return false;
+            }
+            return true;
+        }
+
+        function validateEmail() {
+            const field = document.getElementById('authorEmail');
+            const error = document.getElementById('authorEmailError');
+            const value = field.value;
+
+            if(!value) {
+                showError(field, error, 'Please enter email address');
+                return false;
+            }
+            if(!emailRegex.test(value)) {
+                showError(field, error, 'Please enter valid email address');
+                return false;
+            }
+            return true;
+        }
+
+        function validateYear() {
+            const field = document.getElementById('publishYear');
+            const error = document.getElementById('publishYearError');
+            const value = field.value;
+            const currentYear = new Date().getFullYear();
+
+            if(!value) {
+                showError(field, error, 'Please enter published year');
+                return false;
+            }
+            if(value > currentYear) {
+                showError(field, error, 'Please enter valid published year');
+                return false;
+            }
+            return true;
+        }
+
+        function validatePrice() {
+            const field = document.getElementById('price');
+            const error = document.getElementById('priceError');
+            const value = field.value;
+
+            if(!value) {
+                showError(field, error, 'Please enter price');
+                return false;
+            }
+            if(isNaN(value) || !Number.isInteger(Number(value))) {
+                showError(field, error, 'Price must be an integer');
+                return false;
+            }
+            return true;
+        }
+
+        function showError(field, errorElement, message) {
+            field.classList.add('error-border');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function validateField(fieldId, errorMessage) {
+            const field = document.getElementById(fieldId);
+            const error = document.getElementById(`${fieldId}Error`);
+            
+            if(!field.value.trim()) {
+                showError(field, error, errorMessage);
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>
